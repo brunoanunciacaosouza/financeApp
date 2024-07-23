@@ -22,7 +22,6 @@ function AuthProvider({ children }) {
 
       setLoadingAuth(false);
       navigation.goBack();
-
     } catch (error) {
       console.log("Erro ao cadastrar", error.message);
       setLoadingAuth(false);
@@ -30,7 +29,7 @@ function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signUp, loadingAuth }}>
+    <AuthContext.Provider value={{ signed: !!user, user, signUp, loadingAuth }}>
       {children}
     </AuthContext.Provider>
   );
