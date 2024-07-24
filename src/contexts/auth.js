@@ -28,10 +28,10 @@ function AuthProvider({ children }) {
             setUser(null);
           });
 
-          api.defaults.headers["Authorization"] = `Bearer ${storageUser}`;
+        api.defaults.headers["Authorization"] = `Bearer ${storageUser}`;
 
-          setUser(response.data)
-          setLoading(false);
+        setUser(response.data);
+        setLoading(false);
       }
 
       setLoading(false);
@@ -93,9 +93,15 @@ function AuthProvider({ children }) {
     }
   }
 
+  async function signOut() {
+    await AsyncStorage.clear().then(() => {
+      setUser(null);
+    });
+  }
+
   return (
     <AuthContext.Provider
-      value={{ signed: !!user, user, signUp, signIn, loadingAuth, loading }}
+      value={{ signed: !!user, user, signUp, signIn, signOut, loadingAuth, loading }}
     >
       {children}
     </AuthContext.Provider>

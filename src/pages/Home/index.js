@@ -1,11 +1,10 @@
-import { Text, View } from "react-native";
+import Header from "../../components/Header";
+import { Background } from "./styles";
 
-function Home() {
-  return (
-    <View>
-      <Text>Home page</Text>
-    </View>
-  );
+export default function Home(){
+  return(
+    <Background>
+      <Header title="Minhas movimentações" />
+    </Background>
+  )
 }
-
-export default Home;
