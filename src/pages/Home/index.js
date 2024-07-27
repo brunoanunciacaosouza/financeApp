@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Modal } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { format } from "date-fns";
@@ -10,12 +10,14 @@ import Header from "../../components/Header";
 import BalanceItem from "../../components/BalanceItem";
 import { Area, Background, ListBalance, Title, List } from "./styles";
 import HistoricList from "../../components/HistoricList";
+import CalendarModal from "../../components/CalendarModal";
 
 export default function Home() {
   const isFocused = useIsFocused();
   const [listBalance, setListBalance] = useState([]);
   const [dateMovements, setDateMovements] = useState(new Date());
   const [movements, setMovements] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -44,7 +46,25 @@ export default function Home() {
     getMovements();
 
     return () => (isActive = false);
-  }, [isFocused]);
+  }, [isFocused, dateMovements]);
+
+  async function handleDelete(id) {
+    try {
+      await api.delete("/receives/delete", {
+        params: {
+          item_id: id,
+        },
+      });
+
+      setDateMovements(new Date());
+    } catch (error) {
+      console.log(err);
+    }
+  }
+
+  function filterDateMovements(dateSelected) {
+    setDateMovements(dateSelected);
+  }
 
   return (
     <Background>
@@ -59,7 +79,7 @@ export default function Home() {
       />
 
       <Area>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Icon name="event" color="#121212" size={30} />
         </TouchableOpacity>
         <Title>Ultimas movimentações</Title>
@@ -68,10 +88,19 @@ export default function Home() {
       <List
         data={movements}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <HistoricList data={item} />}
+        renderItem={({ item }) => (
+          <HistoricList data={item} deleteItem={handleDelete} />
+        )}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 20}}
+        contentContainerStyle={{ paddingBottom: 20 }}
       />
+
+      <Modal visible={modalVisible} animationType="fade" transparent={true}>
+        <CalendarModal
+          setVisible={() => setModalVisible(false)}
+          handleFilter={filterDateMovements}
+        />
+      </Modal>
     </Background>
   );
 }
